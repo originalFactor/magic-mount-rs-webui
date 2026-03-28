@@ -100,6 +100,8 @@ type KsuExec = (cmd: string) => Promise<KsuExecResult>;
 
 let ksuExec: KsuExec | null = null;
 let ksuResolved = false;
+let mockModeResolved = false;
+let mockMode = true;
 
 async function resolveKsuExec(): Promise<void> {
   if (ksuResolved) {
@@ -125,9 +127,27 @@ function isDevMode(): boolean {
 }
 
 async function shouldUseMockMode(): Promise<boolean> {
+  if (mockModeResolved) {
+    return mockMode;
+  }
+
   await resolveKsuExec();
 
-  return isDevMode() || !ksuExec;
+  if (isDevMode() || !ksuExec) {
+    mockMode = true;
+    mockModeResolved = true;
+    return mockMode;
+  }
+
+  try {
+    const probe = await ksuExec("echo __MM_KSU_PROBE__");
+    mockMode = probe.errno !== 0;
+  } catch {
+    mockMode = true;
+  }
+
+  mockModeResolved = true;
+  return mockMode;
 }
 
 function isTrueValue(v: unknown): boolean {
