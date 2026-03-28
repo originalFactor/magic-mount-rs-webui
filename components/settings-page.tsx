@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
@@ -35,12 +34,11 @@ import {
 } from "@/lib/external-data";
 
 const MOUNT_SOURCES = ["KSU", "APatch", "Magisk"];
-const GITHUB_REPO_URL = "https://github.com/Tools-cx-app/meta-magic_mount-rs";
+const GITHUB_REPO_URL = "https://github.com/originalFactor/meta-magic_mount-rs";
 
 export function SettingsPage() {
   const [config, setConfig] = useState<MagicConfig | null>(null);
   const [contributors, setContributors] = useState<ContributorProfile[]>([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newPartition, setNewPartition] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
@@ -55,8 +53,6 @@ export function SettingsPage() {
       setContributors(contributorsData);
     } catch (error) {
       console.error("Failed to fetch data:", error);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -108,17 +104,6 @@ export function SettingsPage() {
   const handleGithubClick = async () => {
     await ExternalData.openLink(GITHUB_REPO_URL);
   };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4 p-4">
-        <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-32 w-full rounded-xl" />
-        <Skeleton className="h-32 w-full rounded-xl" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-20">

@@ -4,13 +4,11 @@ import { useEffect, useState, useMemo } from "react";
 import { Search, Package, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { ExternalData, type MagicModule } from "@/lib/external-data";
 
 export function ModulesPage() {
   const [modules, setModules] = useState<MagicModule[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -20,8 +18,6 @@ export function ModulesPage() {
         setModules(data);
       } catch (error) {
         console.error("Failed to fetch modules:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -40,17 +36,6 @@ export function ModulesPage() {
         module.description.toLowerCase().includes(query)
     );
   }, [modules, searchQuery]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4 p-4">
-        <Skeleton className="h-10 w-full rounded-lg" />
-        <Skeleton className="h-20 w-full rounded-xl" />
-        <Skeleton className="h-20 w-full rounded-xl" />
-        <Skeleton className="h-20 w-full rounded-xl" />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-20">

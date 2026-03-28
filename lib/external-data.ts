@@ -73,7 +73,7 @@ export interface StatusSnapshot {
   activePartitions: string[];
 }
 
-const DEFAULT_REPO_OWNER = "Tools-cx-app";
+const DEFAULT_REPO_OWNER = "originalFactor";
 const DEFAULT_REPO_NAME = "meta-magic_mount-rs";
 const DEFAULT_CACHE_KEY = "mm_contributors_cache";
 const DEFAULT_CACHE_DURATION_MS = 1000 * 60 * 60;

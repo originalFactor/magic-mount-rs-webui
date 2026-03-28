@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   ExternalData,
   type StatusSnapshot,
@@ -22,7 +21,6 @@ import {
 export function HomePage() {
   const [status, setStatus] = useState<StatusSnapshot | null>(null);
   const [config, setConfig] = useState<MagicConfig | null>(null);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback(async (showRefresh = false) => {
@@ -37,7 +35,6 @@ export function HomePage() {
     } catch (error) {
       console.error("Failed to fetch data:", error);
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
   }, []);
@@ -52,17 +49,6 @@ export function HomePage() {
 
     return () => clearInterval(interval);
   }, [fetchData]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4 p-4">
-        <Skeleton className="h-32 w-full rounded-xl" />
-        <Skeleton className="h-24 w-full rounded-xl" />
-        <Skeleton className="h-24 w-full rounded-xl" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-      </div>
-    );
-  }
 
   const activeModulesCount = status?.activePartitions?.length ?? 0;
 
