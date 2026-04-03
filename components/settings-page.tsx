@@ -12,6 +12,7 @@ import {
   Loader2,
   X,
   Plus,
+  RefreshCw,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,10 +41,12 @@ export function SettingsPage() {
   const [config, setConfig] = useState<MagicConfig | null>(null);
   const [contributors, setContributors] = useState<ContributorProfile[]>([]);
   const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [newPartition, setNewPartition] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (showLoading = false) => {
+    if (showLoading) setRefreshing(true);
     try {
       const [configData, contributorsData] = await Promise.all([
         ExternalData.loadConfig(),
@@ -51,14 +54,21 @@ export function SettingsPage() {
       ]);
       setConfig(configData);
       setContributors(contributorsData);
+      setHasChanges(false);
     } catch (error) {
       console.error("Failed to fetch data:", error);
+    } finally {
+      if (showLoading) setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleRefresh = () => {
+    fetchData(true);
+  };
 
   const handleSave = async () => {
     if (!config) return;
@@ -106,28 +116,13 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 pb-20">
+    <div className="flex flex-col gap-4 p-4 pb-24">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">设置</h1>
           <p className="text-sm text-muted-foreground">配置 Magic Mount Rs</p>
         </div>
-        {hasChanges && (
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            size="sm"
-            className="gap-2"
-          >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
-            保存
-          </Button>
-        )}
       </div>
 
       {/* Mount Source */}
@@ -311,6 +306,33 @@ export function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-20 left-0 right-0 z-50 flex justify-center gap-3 px-4">
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={handleRefresh}
+          disabled={refreshing || saving}
+          className="gap-2 rounded-full bg-card shadow-lg"
+        >
+          <RefreshCw className={`h-5 w-5 ${refreshing ? "animate-spin" : ""}`} />
+          刷新
+        </Button>
+        <Button
+          size="lg"
+          onClick={handleSave}
+          disabled={saving || !hasChanges}
+          className="gap-2 rounded-full shadow-lg"
+        >
+          {saving ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Save className="h-5 w-5" />
+          )}
+          保存
+        </Button>
+      </div>
     </div>
   );
 }
